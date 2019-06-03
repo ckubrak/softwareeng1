@@ -54,6 +54,17 @@ test05NoSePuedeAgregarUnaCantidadDeLibrosMenorAUnoAlCarrito
 	self assert: (carrito includes: 'libro') not.
 	self assert: (catalogo includes: 'libro').! !
 
+!CarritoTests methodsFor: 'testing' stamp: 'kw 6/3/2019 11:07:42'!
+test06UnLibroApareceEnElCarritoEsLaCantidadDeVecesQueFueAgregado
+	|carrito catalogo|
+	catalogo _ Catalogo new.
+	catalogo add:'libro'.
+	carrito  _ Carrito with: catalogo.
+	carrito addAQuantity: 2 ofBooks: 'libro'.
+	carrito addAQuantity: 4 ofBooks: 'libro'.
+	self assert: (carrito quantityOfABook: 'libro') = 6.
+	self assert: (catalogo includes: 'libro').! !
+
 
 !classDefinition: #Carrito category: #TusLibros!
 Object subclass: #Carrito
@@ -82,16 +93,26 @@ initialize
 	libros _ Dictionary new.! !
 
 
-!Carrito methodsFor: 'as yet unclassified' stamp: 'kw 6/3/2019 10:05:49'!
+!Carrito methodsFor: 'as yet unclassified' stamp: 'kw 6/3/2019 11:04:21'!
 addAQuantity: quantity ofBooks: aBoook
-	(quantity < 1) ifTrue:[self error: Carrito laCantidadDeLibrosNoEsValida].
-	(catalogo includes: aBoook)
-		ifTrue:[libros add: aBoook->quantity.]
-		ifFalse:[self error: Carrito elArticuloNoEstaEnElCatalogo].! !
+	|actualAmount|
+	self validQuantity: quantity.
+	self validBook: aBoook.
+	actualAmount _ libros at: aBoook ifAbsent:[actualAmount _ 0].
+	actualAmount _ actualAmount + quantity.
+	libros add: aBoook->actualAmount.! !
 
 !Carrito methodsFor: 'as yet unclassified' stamp: 'kw 6/3/2019 10:15:21'!
 quantityOfABook: aBoook
 	^libros at: aBoook.! !
+
+!Carrito methodsFor: 'as yet unclassified' stamp: 'kw 6/3/2019 11:02:16'!
+validBook: aBoook
+	(catalogo includes: aBoook)ifFalse:[self error: Carrito elArticuloNoEstaEnElCatalogo].! !
+
+!Carrito methodsFor: 'as yet unclassified' stamp: 'kw 6/3/2019 11:01:07'!
+validQuantity: quantity
+	(quantity < 1) ifTrue:[self error: Carrito laCantidadDeLibrosNoEsValida].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
